@@ -23,28 +23,42 @@
 #define PIN_NUM_RST 22
 #elif CONFIG_ST7735_HOST_HSPI
 #define PIN_NUM_MISO -1
-#define PIN_NUM_MOSI 23  // SDA
-#define PIN_NUM_CLK 18
-#define PIN_NUM_CS 5
+#define PIN_NUM_MOSI 13  // SDA
+#define PIN_NUM_CLK 14
+#define PIN_NUM_CS 15
 
-#define PIN_NUM_DC 21
-#define PIN_NUM_RST 22
+#define PIN_NUM_DC 4
+#define PIN_NUM_RST 2
 #endif
 
 // LCD backlight contorl
 #define PIN_NUM_BCKL CONFIG_ST7735_BL_PIN
 
+#ifdef CONFIG_USE_COLOR_RBG565 // R-B-G 5-6-5
+// Some ready-made 16-bit (RBG-565) color settings:
+#define	COLOR_BLACK      0x0000
+#define COLOR_WHITE      0xFFFF
+#define	COLOR_RED        0xF800
+#define	COLOR_GREEN      0x001F
+#define	COLOR_BLUE       0x07E0
+#define COLOR_CYAN       0x07FF
+#define COLOR_MAGENTA    0xFFE0
+#define COLOR_YELLOW     0xF81F
+#define	COLOR_GRAY       0x8410
+#define	COLOR_OLIVE      0x8011
+#else // R-G-B 5-6-5
 // Some ready-made 16-bit (RGB-565) color settings:
-#define	RGB565_BLACK      0x0000
-#define RGB565_WHITE      0xFFFF
-#define	RGB565_RED        0xF800
-#define	RGB565_GREEN      0x07E0
-#define	RGB565_BLUE       0x001F
-#define RGB565_CYAN       0x07FF
-#define RGB565_MAGENTA    0xF81F
-#define RGB565_YELLOW     0xFFE0
-#define	RGB565_ORANGE     0xFC00
-
+#define	COLOR_BLACK      0x0000
+#define COLOR_WHITE      0xFFFF
+#define	COLOR_RED        0xF800
+#define	COLOR_GREEN      0x07E0
+#define	COLOR_BLUE       0x001F
+#define COLOR_CYAN       0x07FF
+#define COLOR_MAGENTA    0xF81F
+#define COLOR_YELLOW     0xFFE0
+#define	COLOR_GRAY       0x8410
+#define	COLOR_OLIVE      0x8400
+#endif
 
 void st7735_init();
 void st7735_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);

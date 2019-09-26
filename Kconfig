@@ -4,6 +4,17 @@ menu "ST7735 Configuration"
         int "LCD backlight pin"
         default 17
 
+    choice ST7735_RGB_COLOR
+        prompt "Color System"
+        default USE_COLOR_RBG565
+
+        config USE_COLOR_RBG565
+            bool "R-B-G 565"
+
+        config USE_COLOR_RGB565
+            bool "R-G-B 565"
+    endchoice
+
     choice ST7735_SPI_HOST
         prompt "SPI Host"
         default ST7735_HOST_VSPI

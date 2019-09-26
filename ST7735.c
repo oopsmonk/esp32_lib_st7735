@@ -82,7 +82,7 @@ static spi_device_handle_t spi_dev;
 #define ST7735_GMCTRN1 0xE1
 
 // RGB-565 16bit, 128*160;
-static uint16_t display_buff[LCD_WIDTH * LCD_HEIGHT];
+static uint8_t display_buff[LCD_WIDTH * LCD_HEIGHT*2];
 
 DRAM_ATTR static const lcd_init_cmd_t st7735_init_cmds[] = {
     // software reset with delay
@@ -201,9 +201,9 @@ static void st7735_set_address_window(uint8_t x0, uint8_t y0, uint8_t x1, uint8_
 }
 
 void st7735_fill_screen(uint16_t color) {
-  uint8_t data[4];
-  for (int i = 0; i < (LCD_WIDTH * LCD_HEIGHT); i++) {
-    display_buff[i] = color;
+  for (int i = 0; i < (LCD_WIDTH * LCD_HEIGHT *2); i=i+2) {
+    display_buff[i] = color & 0xFF;
+    display_buff[i+1] = color >> 8;
   }
 
   st7735_set_address_window(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
@@ -220,8 +220,9 @@ void st7735_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
 
   st7735_cmd(ST77XX_RAMWR);
 
-  for (int i = 0; i < (w * h); i++) {
-    display_buff[i] = color;
+  for (int i = 0; i < (w * h * 2); i++) {
+    display_buff[i] = color >> 8;
+    display_buff[i+1] = color & 0xFF;
   }
   st7735_data(display_buff, w * h * 2);
 }
@@ -252,11 +253,16 @@ void st7735_init() {
       .pre_cb = lcd_spi_pre_transfer_callback,  // Specify pre-transfer callback to handle D/C line
   };
 
+  spi_host_device_t spi_host = VSPI_HOST;
+#ifdef CONFIG_ST7735_HOST_HSPI
+  spi_host = HSPI_HOST;
+#endif
+
   // Initialize the SPI bus
-  ret = spi_bus_initialize(VSPI_HOST, &buscfg, 1);
+  ret = spi_bus_initialize(spi_host, &buscfg, 1);
   ESP_ERROR_CHECK(ret);
   // Attach the LCD to the SPI bus
-  ret = spi_bus_add_device(VSPI_HOST, &devcfg, &spi_dev);
+  ret = spi_bus_add_device(spi_host, &devcfg, &spi_dev);
   ESP_ERROR_CHECK(ret);
 
   // Initialize non-SPI GPIOs
@@ -288,7 +294,8 @@ void st7735_init() {
 void st7735_draw_pixel(int16_t x, int16_t y, uint16_t color) {
   if ((x < 0) || (x >= LCD_WIDTH) || (y < 0) || (y >= LCD_HEIGHT)) return;
 
-  display_buff[0] = color;
+  display_buff[0] = color >> 8;
+  display_buff[1] = color & 0xFF;
   st7735_set_address_window(x, y, 1, 1);
   st7735_data(display_buff, 2);
 }
