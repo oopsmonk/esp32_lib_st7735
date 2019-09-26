@@ -82,7 +82,7 @@ static spi_device_handle_t spi_dev;
 #define ST7735_GMCTRN1 0xE1
 
 // RGB-565 16bit, 128*160;
-static uint8_t display_buff[LCD_WIDTH * LCD_HEIGHT*2];
+static uint8_t display_buff[LCD_WIDTH * LCD_HEIGHT * 2];
 
 DRAM_ATTR static const lcd_init_cmd_t st7735_init_cmds[] = {
     // software reset with delay
@@ -201,9 +201,9 @@ static void st7735_set_address_window(uint8_t x0, uint8_t y0, uint8_t x1, uint8_
 }
 
 void st7735_fill_screen(uint16_t color) {
-  for (int i = 0; i < (LCD_WIDTH * LCD_HEIGHT *2); i=i+2) {
+  for (int i = 0; i < (LCD_WIDTH * LCD_HEIGHT * 2); i = i + 2) {
     display_buff[i] = color & 0xFF;
-    display_buff[i+1] = color >> 8;
+    display_buff[i + 1] = color >> 8;
   }
 
   st7735_set_address_window(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
@@ -221,8 +221,8 @@ void st7735_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
   st7735_cmd(ST77XX_RAMWR);
 
   for (int i = 0; i < (w * h * 2); i++) {
-    display_buff[i] = color >> 8;
-    display_buff[i+1] = color & 0xFF;
+    display_buff[i] = color & 0xFF;
+    display_buff[i + 1] = color >> 8;
   }
   st7735_data(display_buff, w * h * 2);
 }
@@ -294,8 +294,8 @@ void st7735_init() {
 void st7735_draw_pixel(int16_t x, int16_t y, uint16_t color) {
   if ((x < 0) || (x >= LCD_WIDTH) || (y < 0) || (y >= LCD_HEIGHT)) return;
 
-  display_buff[0] = color >> 8;
-  display_buff[1] = color & 0xFF;
+  display_buff[0] = color & 0xFF;
+  display_buff[1] = color >> 8;
   st7735_set_address_window(x, y, 1, 1);
   st7735_data(display_buff, 2);
 }
@@ -329,7 +329,7 @@ void st7735_draw_char(int16_t x, int16_t y, char c, int16_t color, int16_t bg_co
 
 uint32_t st7735_draw_string(uint16_t x, uint16_t y, const char *pt, int16_t color, int16_t bg_color, uint8_t size) {
   // check row and colume
-  uint32_t x_offset = 5+1, y_offset = 7;  // font size 5x7.
+  uint32_t x_offset = 5 + 1, y_offset = 7;  // font size 5x7.
 
   uint32_t count = 0;
   if (y > 15) return 0;
