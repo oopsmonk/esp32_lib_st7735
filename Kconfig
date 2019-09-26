@@ -1,0 +1,18 @@
+menu "ST7735 Configuration"
+
+    config ST7735_BL_PIN
+        int "LCD backlight pin"
+        default 17
+
+    choice ST7735_SPI_HOST
+        prompt "SPI Host"
+        default ST7735_HOST_VSPI
+
+        config ST7735_HOST_VSPI
+            bool "Use ESP32 VSPI"
+
+        config ST7735_HOST_HSPI
+            bool "Use ESP32 HSPI"
+    endchoice
+
+endmenu
